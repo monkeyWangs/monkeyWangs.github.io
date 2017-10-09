@@ -8,12 +8,12 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Author Settings
-author: David Freeman # add your name
-author-img: david-freeman.jpg # add your photo
-about-author: I am a web developer focusing on front-end development. Always hungry to keep learning. # add description
+author: monkeyWang # add your name
+author-img: avatar.jpg # add your photo
+about-author: 一个前端攻城狮，目前就职于大搜车，专注于前端技术领域的研究和开发. # add description
 twitter: # add your Twitter handle
 facebook: # add your Facebook handle
-github: artemsheludko # add your Github handle
+github: monkeyWangs # add your Github handle
 linkedin: # add your Linkedin handle
 email: # add your Email address
 
