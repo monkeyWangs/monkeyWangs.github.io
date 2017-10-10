@@ -140,10 +140,14 @@ proxyTable: {
 ``` http://api.douban.com/v2/movie ```
 这样便达到了一种跨域请求的方案。
 至此，浏览器端的主要配置已经介绍完了，下面我们来看看运行的结果：
+
 ![浏览器端渲染]({{site.baseurl}}/assets/img/vue-ssr/client.png)
+
 为了介绍浏览器渲染是怎么回事，我们运行一下 npm run build 看看我们的发布版本的文件，到底是什么鬼东西....
 run build 后会都出一个dist目录 ，我们可以看到里面有个 index.html，这个便是我们最终页面将要展示的 html，我们打开，可以看到下面：
+
 ![浏览器端渲染html]({{site.baseurl}}/assets/img/vue-ssr/c-html.png)
+
 观察好的小伙伴可以发现，我们并没有多余的 DOM 元素，就只有一个 div，那么页面要怎么呈现呢？答案是 js append，对，下面的那些js会负责 innerHTML。而js是由浏览器解释执行的，所以呢，我们称之为浏览器渲染，这有几个致命的缺点：
 js 放在 DOM 结尾，如果 js 文件过大，那么必然造成页面阻塞。用户体验明显不好（这也是我我在公司反复被产品逼问的事情）
 1. 不利于 SEO
@@ -153,8 +157,11 @@ js 放在 DOM 结尾，如果 js 文件过大，那么必然造成页面阻塞�
 基于以上的一些问题，服务端渲染呼之欲出....
 
 ### 服务器端渲染豆瓣电影
+
 先看一张 Vue 官网的服务端渲染示意图
+
 ![服务端渲染示意]({{site.baseurl}}/assets/img/vue-ssr/s-webpack.png)
+
 从图上可以看出，SSR 有两个入口文件，client.js 和 server.js， 都包含了应用代码，webpack 通过两个入口文件分别打包成给服务端用的 server bundle 和给客户端用的 client bundle. 当服务器接收到了来自客户端的请求之后，会创建一个渲染器 bundleRenderer，这个 bundleRenderer 会读取上面生成的 server bundle 文件，并且执行它的代码， 然后发送一个生成好的 html 到浏览器，等到客户端加载了 client bundle 之后，会和服务端生成的DOM 进行 Hydration (判断这个 DOM 和自己即将生成的 DOM 是否相同，如果相同就将客户端的Vue实例挂载到这个 DOM 上， 否则会提示警告)。
 具体实现：
 我们需要 Vuex，需要 router，需要服务器，需要服务缓存，需要代理跨域....不急我们慢慢来。
@@ -333,6 +340,7 @@ export { app, router, store }
 这样 服务端入口文件和客户端入口文件便有了一个公共实例 Vue, 和我们以前写的 Vue 实例差别不大，但是我们不会在这里将 app moun t到 DOM 上，因为这个实例也会在服务端去运行，这里直接将 app 暴露出去。
 接下来创建路由 router，创建 Vuex 跟客户端都差不多。详细的可以参考我的项目...
 到此，服务端渲染配置 就简单介绍完了，下面我们启动项目简单的看下
+
 ![服务端渲染结果]({{site.baseurl}}/assets/img/vue-ssr/ssr.png)
 
 这里跟服务端界面一样，不一样的是url已经不是之前的 #/而变成了请求形式 /
@@ -341,8 +349,11 @@ export { app, router, store }
 为了更清晰的对比两次渲染的结果，我做了一次实验，把两个想的项目 build 后模拟生产环境，在浏览器 netWork 模拟网速 3g 环境，先来看看服务端渲染的结果：
 
 ![浏览器端渲染netWork]({{site.baseurl}}/assets/img/vue-ssr/c-network.png)
+
 可以看到整体加载 DOM 一共花了832ms；用户可能在网络比较慢的情况下从远处访问网站 - 或者通过比较差的带宽。 这些情况下，尽量减少页面请求数量，来保证用户尽快看到基本的内容。
+
 ![服务端渲染netWork]({{site.baseurl}}/assets/img/vue-ssr/s-network.png)
+
 然后我们可以看到其中有一个 vendor.js 达到了563KB，整体的加载时间达到了了8.19s，这是因为单页面文件的原因，会把所有的逻辑代码打包到一个js里面。可以用分 webpack 拆分代码避免强制用户下载整个单页面应用，但是，这样也远没有下载个单独的预先渲染过的 HTML文件性能高。
 
 
