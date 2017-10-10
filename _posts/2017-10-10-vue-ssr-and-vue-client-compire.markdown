@@ -2,9 +2,10 @@
 layout: post
 title: "实例PK ( Vue服务端渲染 VS 浏览器端渲染 )"
 date: 2017-10-10 10:34:10 +0300
-description: Vue 2.0 开始支持服务端渲染的功能，所以本文章也是基于 Vue 2.0 以上版本。网上对于服务端渲染的资料还是比较少，最经典的莫过于 Vue 作者尤雨溪大神的 Vue-hacker-news。本人在公司做 Vue 项目的时候，一直苦于产品、客户对首屏加载要求，SEO 的诉求，也想过很多解决方案，本次也是针对浏览器渲染不足之处，采用了服务端渲染，并且做了两个一样的 Demo作为比较，更能直观的对比 Vue 前后端的渲染。 # Add post description (optional)
+description: 本人在公司做 Vue 项目的时候，一直苦于产品、客户对首屏加载要求，SEO 的诉求，也想过很多解决方案，本次也是针对浏览器渲染不足之处，采用了服务端渲染，并且做了两个一样的 Demo作为比较... # Add post description (optional)
 img:  vue-ssr.jpg
 ---
+
 Vue 2.0 开始支持服务端渲染的功能，所以本文章也是基于 Vue 2.0 以上版本。网上对于服务端渲染的资料还是比较少，最经典的莫过于 Vue 作者尤雨溪大神的 Vue-hacker-news。本人在公司做 Vue 项目的时候，一直苦于产品、客户对首屏加载要求，SEO 的诉求，也想过很多解决方案，本次也是针对浏览器渲染不足之处，采用了服务端渲染，并且做了两个一样的 Demo作为比较，更能直观的对比 Vue 前后端的渲染。
 话不多说，我们分别来看两个Demo:（欢迎star 欢迎pull request）
 1. 浏览器端渲染[Demo][https://github.com/monkeyWangs/doubanMovie]
