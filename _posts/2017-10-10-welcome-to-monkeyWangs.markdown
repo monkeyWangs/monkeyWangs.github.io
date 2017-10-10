@@ -13,6 +13,6 @@ Hi，欢迎来到我的技术空间。
 这里我将会不定期的更新最新的前端技术文章和博客，之前发表过的知乎专栏和掘金专栏，我也将会在近期内迁移到此博客中心来，如果您有兴趣可以与我一起交流 email: 2424880409@qq.com。您也可以查看我的[github主页][monkeywang-gh]。当然，如果您是掘金、知乎等社交用户，也欢迎了解我的[知乎][zhihu]主页，和[掘金][juejin]主页。
 
 
-[monkeywang-gh]:   https://github.com/monkeyWangs
+[monkeywang-gh]: https://github.com/monkeyWangs
 [zhihu]: https://www.zhihu.com/people/monkey-wang-/activities
 [juejin]: https://juejin.im/user/58de5a49ac502e006cfb35e9
