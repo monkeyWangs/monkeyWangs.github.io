@@ -1,0 +1,175 @@
+---
+layout: post
+title: "浅谈前后端分离与实践（一）"
+date: 2017-10-11 15:56:20 +0300
+description: 前后端分离一直是人们关注的话题，这里初步探讨前后端分离实践，本文所有的案例源码均在我的github上可以找到，有兴趣的可以动手参考实践。 # Add post description (optional)
+img:  pager4/mvc.jpg # Add image post (optional)
+---
+
+### 一、起源
+
+（故事纯属虚构，如有雷同，纯属巧合）传说在很久很久以前，我们有志之士有了个创业的想法，于是乎开始了自己的创业之梦，但是人手不足啊，于是乎所有角色老子一个人全包了：
+
+* Roles: PM, DBA, RD, FED, Designer, ...
+* Skills: Linux, MySQL, JAVA, JavaScript, HTML, CSS, ...
+* Tools: phpmyadmin, photoshop, powerpoint, ...
+
+我们用 express 应用生成器来模拟一下传统开发（因为本人早已忘记java是怎么写的了，这里只是为了方便演示）
+
+``` bash
+$ npm install express-generator -g # 安装 express-generator
+$ express progressive # 初始化项目
+$ cd progressive # 进入目录
+$ npm install # 安装依赖
+$ npm start # 启动项目
+```
+
+然后我们愉快的打开了 localhost:3000 看到了我们的页面:
+
+![image]({{site.baseurl}}/assets/img/pager4/1.jpg)
+
+接着，我看是研究代码：
+发现我的模板引擎用的是 jade 是通过 nodejs 服务端进行动态渲染：
+
+```javascript
+// app.js
+app.set('view engine', 'jade');
+```
+
+然后当我访问 localhost:3000 的时候，开始了界面渲染：
+
+```javascript
+// routers/index.js
+router.get('/', function(req, res, next) {
+  // 假设这里我为了获取 title 的值，对 sql 进行了查询，然后把title的值插入到模板引擎中
+  ...
+  res.render('index', { title: 'Express' });
+});
+```
+然后我又研究了一下 [jade](https://segmentfault.com/a/1190000000357534) 语法，准备后续的开发：
+
+``` jade
+// index.jade
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+```
+
+紧接着我们开始了后续的开发....经过几个月，我们写了sql，写了 jade， 写了node .... 。做了PM，做了DBA， RD ....终于一个项目搞完了。然后我愉快的拿到了投资人的投资，有钱了，项目迭代总不能什么事情都是我一个人干吧？我可以找几个人一起来开发嘛，于是乎，我招聘了前端，招了后端，招了 PM ....
+后面的开发愉快且开心的打开了我的代码：
+
+![image]({{site.baseurl}}/assets/img/pager4/2.jpg)
+
+![image]({{site.baseurl}}/assets/img/pager4/3.jpg)
+
+...... WTF 是谁把手套放进锅子里面煮...
+
+### 二、为了更好的划分，我们开始了重构
+在发现问题之后，为了更好的脱离这种前端强依赖后端的关系，我们想要把数据层的接口给分离出来，以 ajax 的形式进行交互，让服务端只负责渲染逻辑，不负责数据填充。页面的数据部分通过 ajax json 的形式形式进行交互，所以我们的结构可能是这样子：
+
+![image]({{site.baseurl}}/assets/img/pager4/4.jpg)
+
+所以现在我的页面请求逻辑是这样子的：
+
+``` javascript
+// routers/index.js
+router.get('/', function(req, res, next) {
+  res.render('index');
+});
+router.get('/getTitle', function(req, res, next) {
+  res.json({
+    code: 0,
+    msg: 'success',
+    data: 'express'
+  })
+});
+```
+
+在页面新建 index.js:
+
+``` javascript
+ajaxGet('/getTitle', function (err, res) {
+    $('#title').text('welcome to ' + res.data);
+});
+```
+
+重构 index.jade
+
+``` jade
+extends layout
+
+block content
+  h1= title
+  p#title
+
+append scripts
+  script(src='/javascripts/jquery.min.js')
+  script(src='/javascripts/index.js')
+```
+
+这样便完成了前后端数据交互层的问题。but：前后端的界限是按照浏览器和服务器的划分。那么我们经常会发现一些问题：
+
+那么，作为前端开发的我们在实际的开发场景中又会遇到以下问题：
+
+1. 环境：进行本地开发，需要起后端环境，如 nodejs 服务（如果是去其他语言 我们可能需要 tomcat、Apache.... ），影响开发效率
+2. 联调：前后端共用一套服务端环境，需要及时同步代码，造成效率底下。同时前后端关 注点不同，前端更专注浏览器适配，效果展示和用户体验，而服务端则关注的是数据安全和可靠...
+3. 接口：
+* 接口定义一般使用 word 文档，前端开发时不好理解接口字段，影响开发效率
+* 接口变更需要重新编写文档，并重新发送，影响开发效率
+* 文档散落，影响接口维护
+
+出现影响开发效率的事情，就说明现有的模式还是存在问题，显然问题的解题思路需要我们重新思考“前后端”的定义。
+
+### 三、前后端分离实践
+为了更高的提高开发效率，我们的前端 MV* 时代开始到来：
+
+![image]({{site.baseurl}}/assets/img/pager4/mvc.jpg)
+
+前后端数据通过JSON进行交互，彼此互相不关联，接口分离，后端提供数据即可，前端自己搞。MODEL层 - JAVASCRIPT OBJECT，VIEW层 - JAVASCRIPT TEMPLATE。业界也充满了新的解决方案比如： Backbone, EmberJS, KnockoutJS, AngularJS, React, Vue...
+
+于是乎我们开始了新的旅途：MVVM 的单页面开发：
+
+![image]({{site.baseurl}}/assets/img/pager4/5.gif)
+
+我们把服务层抽出来，最终形成的目录结构可能是这样的：
+
+![image]({{site.baseurl}}/assets/img/pager4/6.jpg)
+
+我们的服务端提供接口和前端进行交互：
+
+``` javascript
+// routers/users.js
+let express = require('express');
+let router = express.Router();
+let usersCtrl = require('../controllers/usersCtrl')
+
+router.post('/login', usersCtrl.login)
+router.post('/sign', usersCtrl.sign)
+router.get('/getUserInfo', usersCtrl.getUserInfo)
+module.exports = router
+```
+
+此时，前端使用 vue-cli 生成脚手架，通过安装 axios 进行 ajax 数据请求便可以得到返回的数据。前后端彼此互不关联。
+but：新的需求来了，我们要定义前后端的数据接口了，这时候前端需要等到服务端接口开发完才能进行开发吗？说好的前后端分离呢？
+这个时候，前端可能会采取 mock 的形式进行数据模拟，需要前后端共同定义好接口规范，于是乎我们开心的在本地写了一大堆mock文件。有一天接口突然要变个字段，并没有及时的通知前端，完了.... 或者团队成员之间协同开发，我们需要同步 mock 数据，需要不断地进行 git 提交.... 随着项目的的复杂度增加，mock 数据如何管理？
+这个时候，我们需要一台 mock 服务器，最好能同步服务端接口的 mock。当然，现在网上也已经有了成熟的解决方案，比如 easy-mock 。他可以很好地支持Swagger，这是一个重磅级特性，通过 Swagger 只需1秒就能创建好项目所有的 Mock 接口。
+
+![image]({{site.baseurl}}/assets/img/pager4/7.gif)
+
+说到这里，我们完成了一个最基本的前后端分离的方案，后面我会接着介绍中间层 nodejs 应用和前端自动化发布以及脚手架的相关问题。如果您对本文有不同的意见也欢迎一起探讨。
+
+关于：
+
+作者：monkeyWang
+
+
+本文部分图片段落参考文章：[实践中的前后端分离](https://juejin.im/post/59dad63ff265da065270d49e)。 [淘宝前后端分离实践](http://link.zhihu.com/?target=http%3A//2014.jsconf.cn/slides/herman-taobaoweb/index.html)
+
+
+本文源码详见：[服务端代码。](https://github.com/monkeyWangs/haidai-server)[前端代码。](https://github.com/monkeyWangs/haidai-admin)[基于 vue 和 easy-mock 搭建的脚手架](https://github.com/monkeyWangs/vue-superCli)
+
+
+后面有时间再接着介绍我会接着介绍中间层 nodejs 应用和前端自动化发布以及脚手架的相关问题....
+
