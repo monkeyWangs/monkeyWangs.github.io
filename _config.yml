@@ -11,7 +11,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 name: 王伟
 author: monkeyWang # add your name
 author-img: avatar.jpg # add your photo
-about-author: 现就职于杭州大搜车，做过底层业务，负责过公司架构设计。带过团队研究技术解决方案，做过大型项目的自动化发布，集成化测试，脚手架构建。欢迎关注我的微信公众号，每周推送最新的前端知识： # add description
+about-author: 现就职于杭州大搜车，做过底层业务，负责过公司架构设计。带过团队研究技术解决方案，做过大型项目的自动化发布，集成化测试，脚手架构建。欢迎关注前端技术公众号：前端知识铺 # add description
 zhihu: monkey-wang-/activities # add your Twitter handle
 juejin: 58de5a49ac502e006cfb35e9 # add your Facebook handle
 github: monkeyWangs # add your Github handle
