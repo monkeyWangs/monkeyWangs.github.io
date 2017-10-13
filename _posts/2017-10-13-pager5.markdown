@@ -35,11 +35,11 @@ module.exports = {
 ```
 最终会生成类似于这样的目录结构
 
-![image](https://pic1.zhimg.com/v2-e1dbc5537b6715b4acb3c8f76f1c4f24_b.jpg)
+![image](http://img.souche.com/f2e/6cca127da704e019354f99cfd51f941b.jpg)
 
 而里面的内容都会被渲染成了静态的 html 文件
 
-![image](https://pic3.zhimg.com/v2-cc03319779f236c9ba0d4022284fcf32_b.jpg)
+![image](http://img.souche.com/f2e/4e59c900373d4f08b6d8a0e6e48d19c4.jpg)
 
 相对于之前的可能只有
 
